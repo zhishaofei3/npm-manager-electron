@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell, ipcMain, session, protocol } from 'electron'
 import { release } from 'os'
 import { join, resolve } from 'path'
+import { setNewWebContent } from './interflow'
 
 // Disable GPU Acceleration for Windows 7
 if (release().startsWith('6.1')) app.disableHardwareAcceleration()
@@ -38,7 +39,7 @@ async function createWindow() {
     webPreferences: {
       preload,
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: true,
       webSecurity: false,
     },
   })
@@ -53,6 +54,8 @@ async function createWindow() {
     })
     // win.webContents.openDevTools()
   }
+
+  ipcMain.on('set-new-web-content', setNewWebContent)
 
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {

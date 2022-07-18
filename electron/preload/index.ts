@@ -1,3 +1,5 @@
+const { contextBridge, ipcRenderer } = require('electron')
+
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
   return new Promise(resolve => {
     if (condition.includes(document.readyState)) {
@@ -90,5 +92,11 @@ window.onmessage = ev => {
 }
 
 setTimeout(removeLoading, 4999)
+
+// 向渲染器进程暴露window下的对象electronAPI
+contextBridge.exposeInMainWorld('electronAPI', {
+  setNewWebContent: () => ipcRenderer.send('set-new-web-content'),
+})
+
 
 export {}
